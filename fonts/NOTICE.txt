@@ -1,0 +1,14 @@
+Fairway Ledger bundles three fonts so the scorecard can open offline.
+
+Special Elite
+Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI).
+Licensed under the Apache License, Version 2.0. See Apache-2.0.txt.
+
+Architects Daughter
+Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com).
+Licensed under the SIL Open Font License, Version 1.1. See OFL-ArchitectsDaughter.txt.
+
+Libre Baskerville
+Copyright 2012 The Libre Baskerville Project Authors (https://github.com/impallari/Libre-Baskerville),
+with Reserved Font Name Libre Baskerville.
+Licensed under the SIL Open Font License, Version 1.1. See OFL-LibreBaskerville.txt.

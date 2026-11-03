@@ -5,11 +5,104 @@
   Mobile comes first: big tap targets, a 9-column grid, and type
   that stays at least 16px so phones don't zoom in on focus.
 
-  Fonts (loaded from Google Fonts in index.html):
+  Fonts are self-hosted in fonts/ so the service worker can store them
+  and the card still looks right with no signal. Same families as before:
   - Special Elite: typewriter labels, like a printed card
   - Libre Baskerville: readable sentences and the big total
   - Architects Daughter: handwriting for the course name and the win of the day, set in capitals
+  If a file is missing, the card falls back to Courier, Palatino, and a print font.
+  Licenses are in fonts/NOTICE.txt.
 */
+
+@font-face {
+  font-family: "Architects Daughter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/architects-daughter-400-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Architects Daughter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/architects-daughter-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-400-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-400-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-400-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-700-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/libre-baskerville-700-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/special-elite-400-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/special-elite-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   --paper: #f3ecdc;
@@ -973,7 +1066,81 @@ body.dialog-open { overflow: hidden; }
   .backup-actions { grid-template-columns: 1fr; }
 }
 
+/* Pencil marks
+   The score is real text, updated immediately. These strokes are
+   decoration on top: a short underline written with stroke-dashoffset,
+   and a circle when that hole is at or under par. Both finish in
+   under 400ms. prefers-reduced-motion hides them. */
+
+.count,
+.cell-strokes { position: relative; }
+
+.penciled { animation: pencil-ink 180ms ease-out forwards; }
+
+@keyframes pencil-ink {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+
+.scribble,
+.pencil-ring {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scribble {
+  left: -8%;
+  width: 116%;
+  height: 0.42em;
+  bottom: 0.02em;
+  color: var(--pencil);
+}
+
+.cell-strokes .scribble {
+  height: 0.7em;
+  bottom: -0.08em;
+}
+
+.pencil-ring {
+  left: 50%;
+  top: 50%;
+  width: 1.35em;
+  height: 1.45em;
+  color: var(--olive);
+  transform: translate(-50%, -52%) rotate(-7deg);
+}
+
+.cell-strokes .pencil-ring {
+  width: 1.7em;
+  height: 1.45em;
+}
+
+.scribble path,
+.pencil-ring path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pencil-draw 320ms ease-out forwards;
+}
+
+.pencil-ring path { animation-duration: 360ms; }
+
+@keyframes pencil-draw {
+  to { stroke-dashoffset: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stamp,
   .empty-mark { transform: none; }
+
+  .penciled,
+  .scribble path,
+  .pencil-ring path { animation: none; }
+
+  .scribble,
+  .pencil-ring { display: none; }
 }

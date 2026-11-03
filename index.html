@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <!--
   Fairway Ledger
-  A one-page golf scorecard for beginners. No build step: this file,
-  style.css, and app.js are the whole app. Host the folder on GitHub Pages
-  (Settings > Pages, deploy from main, root) or open index.html locally.
+  A one-page golf scorecard for beginners. No build step. Host the folder
+  on GitHub Pages (Settings > Pages, deploy from main, root) or serve it
+  locally. The script tag is at the bottom so the markup above exists
+  before app.js runs.
 
-  The script tag is at the bottom so the markup above exists before app.js runs.
+  manifest.webmanifest, the icons, and sw.js make the card installable
+  and available offline. Paths are relative so the site can live in a
+  folder such as /golf-tracker/.
 -->
 <html lang="en">
 <head>
@@ -14,10 +17,13 @@
   <title>Fairway Ledger — a kind golf scorecard</title>
   <meta name="description" content="A beginner-friendly paper scorecard for golf. Track strokes, lost balls, and the win of the day. Rounds stay on this phone.">
   <meta name="theme-color" content="#1e331c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Ledger">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%233f5124'/%3E%3Cpath d='M32 12v30' stroke='%23f3ecdc' stroke-width='2'/%3E%3Cpath d='M32 14h16l-4 6 4 6H32z' fill='%23f3ecdc'/%3E%3Cpath d='M16 50c6 6 26 6 32 0' fill='none' stroke='%23f3ecdc' stroke-width='2'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
