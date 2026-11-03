@@ -8,6 +8,9 @@
   2. Storage. The "book" of rounds is saved in localStorage.
   3. Rendering. render() draws the page from that book.
   4. Events. Clicks and typing update the book, then draw again.
+  5. Offline. init() registers sw.js, which stores the page on the
+     phone. The explanation of caching lives in sw.js. Rounds stay
+     in localStorage, not in that cache.
 
   Scoring choice, on purpose:
   Strokes are the score. Lost balls are a separate note. They are NOT
@@ -37,6 +40,9 @@ var activeHoleIndex = 0;
 var storageOk = true;
 var dialogResolver = null;
 var rendering = false;
+// Set only for the redraw that follows a stroke or lost-ball tap.
+// render() reads it while drawing those numbers, then it is cleared.
+var pendingPencil = null;
 
 // Remembered form values, so redrawing the setup screen doesn't wipe them.
 var setupState = {
@@ -438,6 +444,80 @@ function appendChild(node, child) {
   else node.append(document.createTextNode(String(child)));
 }
 
+// ----- Pencil marks -------------------------------------------------
+// Logging a stroke or a lost ball redraws the number immediately.
+// On top of that number we draw a short underline, and, when the
+// hole is at or under par, a small circle. Both are SVG paths whose
+// dash starts covering the whole stroke and shrinks to nothing, so
+// the line appears to be written. pathLength="1" makes the dash
+// "1" mean "the whole path", whatever its real length is.
+// The marks are decoration. The readable number is still text.
+
+var SVG_NS = "http://www.w3.org/2000/svg";
+
+function prefersReducedMotion() {
+  if (!window.matchMedia) return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function svgNode(tag, props) {
+  var node = document.createElementNS(SVG_NS, tag);
+  var keys;
+  var i;
+  if (!props) return node;
+  keys = Object.keys(props);
+  for (i = 0; i < keys.length; i += 1) {
+    var key = keys[i];
+    if (props[key] == null || props[key] === false) continue;
+    if (key === "className") node.setAttribute("class", props[key]);
+    else node.setAttribute(key, String(props[key]));
+  }
+  return node;
+}
+
+function scribbleMark() {
+  var svg = svgNode("svg", {
+    className: "scribble",
+    viewBox: "0 0 40 12",
+    "aria-hidden": "true",
+    focusable: "false"
+  });
+  svg.appendChild(svgNode("path", {
+    d: "M1 7 C 8 2, 14 11, 22 6 S 34 11, 39 4",
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": "2.4",
+    "stroke-linecap": "round",
+    pathLength: "1"
+  }));
+  return svg;
+}
+
+function pencilCircleMark() {
+  var svg = svgNode("svg", {
+    className: "pencil-ring",
+    viewBox: "0 0 48 48",
+    "aria-hidden": "true",
+    focusable: "false"
+  });
+  svg.appendChild(svgNode("path", {
+    d: "M30 8 C 42 12, 46 26, 40 36 C 34 46, 18 47, 10 38 C 2 29, 3 14, 14 8 C 22 3, 34 4, 38 14",
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": "2.6",
+    "stroke-linecap": "round",
+    pathLength: "1"
+  }));
+  return svg;
+}
+
+function markPenciled(node, circle) {
+  if (prefersReducedMotion()) return;
+  node.classList.add("penciled");
+  node.appendChild(scribbleMark());
+  if (circle) node.appendChild(pencilCircleMark());
+}
+
 // ----- Setup screen -------------------------------------------------
 
 function choiceRadio(value, label) {
@@ -637,6 +717,10 @@ function holeCell(hole, index) {
   var label = hole.strokes > 0
     ? "Hole " + number + ", " + hole.strokes + " strokes, par " + hole.par
     : "Hole " + number + ", no score yet, par " + hole.par;
+  var strokes = h("span", { className: "cell-strokes" }, scoreText);
+  if (pendingPencil && pendingPencil.field === "strokes" && pendingPencil.index === index) {
+    markPenciled(strokes, pendingPencil.circle);
+  }
   return h("button", {
     type: "button",
     className: "hole-cell",
@@ -646,7 +730,7 @@ function holeCell(hole, index) {
     "aria-label": selected ? label + ". Selected." : label
   },
     h("span", { className: "cell-num" }, String(number)),
-    h("span", { className: "cell-strokes" }, scoreText),
+    strokes,
     h("span", { className: "cell-par" }, "par " + hole.par)
   );
 }
@@ -702,6 +786,13 @@ function renderCard(round) {
   } else {
     vsText = vsParPhrase(summary.diff) + " across " + plural(summary.played, "hole");
     kind = kindLine(summary.diff);
+  }
+
+  var strokeCount = h("span", { className: "count", id: "stroke-count" }, hole.strokes > 0 ? String(hole.strokes) : "\u2013");
+  var penaltyCount = h("span", { className: "count", id: "penalty-count" }, String(hole.penalties));
+  if (pendingPencil && pendingPencil.index === activeHoleIndex) {
+    if (pendingPencil.field === "strokes") markPenciled(strokeCount, pendingPencil.circle);
+    if (pendingPencil.field === "penalties") markPenciled(penaltyCount, false);
   }
 
   return h("section", { "aria-labelledby": "card-heading" },
@@ -774,7 +865,7 @@ function renderCard(round) {
           h("p", { className: "label" }, "Strokes"),
           h("div", { className: "stepper-row" },
             stepButton("Remove one stroke on hole " + holeNumber, "stroke", activeHoleIndex, -1, hole.strokes <= 0, "tap-lg"),
-            h("span", { className: "count", id: "stroke-count" }, hole.strokes > 0 ? String(hole.strokes) : "\u2013"),
+            strokeCount,
             stepButton("Add one stroke on hole " + holeNumber, "stroke", activeHoleIndex, 1, hole.strokes >= MAX_STROKES, "tap-lg")
           )
         ),
@@ -782,7 +873,7 @@ function renderCard(round) {
           h("p", { className: "label" }, "Lost balls / penalties"),
           h("div", { className: "stepper-row" },
             stepButton("Remove a lost ball or penalty on hole " + holeNumber, "penalty", activeHoleIndex, -1, hole.penalties <= 0, ""),
-            h("span", { className: "count", id: "penalty-count" }, String(hole.penalties)),
+            penaltyCount,
             stepButton("Add a lost ball or penalty on hole " + holeNumber, "penalty", activeHoleIndex, 1, hole.penalties >= MAX_PENALTIES, "")
           ),
           h("p", { className: "fine" }, "A side note. Not added to the stroke total.")
@@ -1061,8 +1152,21 @@ function changeHole(index, field, delta, min, max) {
   if (next === hole[field]) return;
   hole[field] = next;
   activeHoleIndex = index;
+  // Only a stroke or a lost ball is penciled. Par is a printed
+  // number you are correcting, not a score you just wrote down.
+  // The circle is the "at or under par" mark, and only for strokes:
+  // a lost ball does not change that.
+  pendingPencil = null;
+  if (field === "strokes" || field === "penalties") {
+    pendingPencil = {
+      index: index,
+      field: field,
+      circle: field === "strokes" && next > 0 && next <= hole.par
+    };
+  }
   commit(round);
   render();
+  pendingPencil = null;
 }
 
 function moveHole(delta) {
@@ -1468,6 +1572,19 @@ function readBackup(file) {
 
 // ----- Startup ------------------------------------------------------
 
+function registerServiceWorker() {
+  // Optional. Scoring does not wait on it. A browser without service
+  // workers, or a page opened as a file rather than from a server,
+  // skips this and the card still works online. sw.js explains the cache.
+  // updateViaCache: "none" so a new sw.js is noticed even if the host
+  // caches scripts. The scope is the folder this file lives in, which
+  // matches the manifest scope "./".
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(function () {
+    // A failed registration must not break the scorecard.
+  });
+}
+
 function init() {
   var viewRoot = document.getElementById("view");
   var dialogRoot = document.getElementById("dialog-root");
@@ -1503,6 +1620,7 @@ function init() {
   });
   document.addEventListener("keydown", onKeydown);
   render();
+  registerServiceWorker();
 }
 
 if (typeof document !== "undefined") {
