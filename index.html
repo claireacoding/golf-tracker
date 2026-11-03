@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+  Fairway Ledger
+  A one-page golf scorecard for beginners. No build step: this file,
+  style.css, and app.js are the whole app. Host the folder on GitHub Pages
+  (Settings > Pages, deploy from main, root) or open index.html locally.
+
+  The script tag is at the bottom so the markup above exists before app.js runs.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fairway Ledger — a kind golf scorecard</title>
+  <meta name="description" content="A beginner-friendly paper scorecard for golf. Track strokes, lost balls, and the win of the day. Rounds stay on this phone.">
+  <meta name="theme-color" content="#1e331c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%233f5124'/%3E%3Cpath d='M32 12v30' stroke='%23f3ecdc' stroke-width='2'/%3E%3Cpath d='M32 14h16l-4 6 4 6H32z' fill='%23f3ecdc'/%3E%3Cpath d='M16 50c6 6 26 6 32 0' fill='none' stroke='%23f3ecdc' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#view">Skip to the card</a>
+  <main class="sheet">
+    <div class="frame">
+      <header class="mast">
+        <div class="club-bar">
+          <svg class="crest" viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+            <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+            <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="0.75"></circle>
+            <path d="M32 13v32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+            <path d="M32 15h15l-3.4 5.2 3.4 5.2H32z" fill="currentColor"></path>
+            <path d="M17 49c5.2 5 24.6 5 30 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+            <circle cx="32" cy="47.2" r="1.5" fill="currentColor"></circle>
+          </svg>
+          <div class="club-copy">
+            <p class="club">Good Game Club</p>
+            <p class="member">Clubhouse card</p>
+          </div>
+        </div>
+        <h1>Fairway Ledger</h1>
+        <p class="tagline">Track the round. Keep the good parts.</p>
+      </header>
+
+      <nav class="nav" aria-label="Sections">
+        <button type="button" id="nav-score">Scorecard</button>
+        <button type="button" id="nav-history">History</button>
+      </nav>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <div id="view">
+        <noscript>
+          <p class="lead">Turn on JavaScript to use the scorecard. Everything runs in app.js on this phone; nothing is sent to a server.</p>
+        </noscript>
+      </div>
+
+      <footer class="colophon">Kept in this browser. Export a copy from History.</footer>
+    </div>
+  </main>
+
+  <div id="dialog-root" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
