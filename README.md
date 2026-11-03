@@ -75,4 +75,4 @@ A file that is just a JSON array of rounds also imports. Each round needs `"hole
 
 If you are reading the code, start at the top of `app.js`. The scoring functions come first and do not touch the page. Then storage, then drawing, then the click handler.
 
-Fonts are loaded from Google Fonts (Special Elite, Libre Baskerville, and Caveat). If those are blocked, the card falls back to Courier, Palatino, and a script font.
+Fonts are loaded from Google Fonts (Special Elite, Libre Baskerville, and Architects Daughter). If those are blocked, the card falls back to Courier, Palatino, and a print font. Architects Daughter is set in capitals.
